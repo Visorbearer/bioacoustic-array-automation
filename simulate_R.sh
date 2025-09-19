@@ -1,4 +1,4 @@
 #!/bin/bash
-xdotool key R
 
-# Run in shell: chmod +x /path/to/simulate_R.sh
+echo -ne "\x00\x00\x15\x00\x00\x00\x00\x00" > /dev/hidg0
+echo -ne "\x00\x00\x00\x00\x00\x00\x00\x00" > /dev/hidg0

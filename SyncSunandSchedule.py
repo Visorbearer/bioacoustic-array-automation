@@ -6,7 +6,7 @@ import subprocess
 import os
 
 # Get location (general is fine)
-city = LocationInfo("Grein Farm", "Illinois", "America/Chicago", latitude: 40.070442, longitude: -88.222556)
+city = LocationInfo("Grein Farm", "Illinois", "America/Chicago", 40.070442, -88.222556)
 
 # Pull datetime from radar
 # TBD
@@ -27,14 +27,14 @@ start_at = start_time.strftime("%Y%m%d%H%M")
 stop_at  = stop_time.strftime("%Y%m%d%H%M")
 
 # Path for script that simulates R press
-script_path = "simulate_R.sh"
+script_path = "/home/admin/Desktop/RadarandRecorder/simulate_R.sh"
 
 # Schedule start and stop jobs with at
 subprocess.run(["at", "-t", start_at], input=f"{script_path}\n", text=True)
 subprocess.run(["at", "-t", stop_at], input=f"{script_path}\n", text=True)
 
 # Log sunset and sunrise times
-log_dir = "/var/timelog/sun_times"
+log_dir = "/home/admin/Desktop/RadarandRecorder/timelog/sun_times"
 os.makedirs(log_dir, exist_ok=True)
 log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d") + ".log")
 

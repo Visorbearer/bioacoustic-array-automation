@@ -26,12 +26,13 @@ stop_time = sunrise + timedelta(hours=1)
 start_at = start_time.strftime("%Y%m%d%H%M")
 stop_at  = stop_time.strftime("%Y%m%d%H%M")
 
-# Path for script that simulates R press
-script_path = "/home/admin/Desktop/RadarandRecorder/simulate_R.sh"
+# Path for script that simulates CTRL + R and CTRL + S presses
+start_script_path = "/home/admin/Desktop/RadarandRecorder/simulate_R.sh"
+stop_script_path = "/home/admin/Desktop/RadarandRecorder/simulate_S.sh"
 
 # Schedule start and stop jobs with at
-subprocess.run(["at", "-t", start_at], input=f"{script_path}\n", text=True)
-subprocess.run(["at", "-t", stop_at], input=f"{script_path}\n", text=True)
+subprocess.run(["at", "-t", start_at], input=f"{start_script_path}\n", text=True)
+subprocess.run(["at", "-t", stop_at], input=f"{stop_script_path}\n", text=True)
 
 # Log sunset and sunrise times
 log_dir = "/home/admin/Desktop/RadarandRecorder/timelog/sun_times"

@@ -32,3 +32,5 @@ echo -ne '\x05\x01\x09\x06\xa1\x01\x05\x07\x19\xe0\x29\xe7\
 
 ln -s functions/hid.usb0 configs/c.1/
 echo fe980000.usb > UDC
+
+chmod 666 /dev/hidg0

@@ -53,7 +53,7 @@ os.makedirs(log_dir, exist_ok=True)
 log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d_%H%M%S") + ".log")
 
 # Make day folder for recordings
-day_folder = f"/home/admin/rec/{start_time.strftime("%Y%m%d")}"
+day_folder = f"/home/admin/rec/{start_time.strftime('%Y%m%d')}"
 os.makedirs(day_folder, exist_ok=True)
 
 # Loop over each 30 min interval nightly

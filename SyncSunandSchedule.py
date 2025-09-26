@@ -42,6 +42,7 @@ match = re.search(r"card (\d+):.*?UMC", arecord_output)
 if match:
     card_number = match.group(1)
     device = f"hw:{card_number},0"
+    print(f"Found UMC recorder on {device}.")
 else:
     device = "hw:1,0"
     print("Could not find the UMC recorder. Defaulting to hw:1,0.")

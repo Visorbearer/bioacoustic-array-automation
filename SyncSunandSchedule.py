@@ -1,4 +1,5 @@
 import time
+import math
 from astral import LocationInfo
 from astral.sun import sun
 from datetime import date, datetime, timedelta
@@ -26,18 +27,33 @@ stop_time = sunrise + timedelta(hours=1)
 start_at = start_time.strftime("%Y%m%d%H%M")
 stop_at  = stop_time.strftime("%Y%m%d%H%M")
 
-# Path for script that simulates CTRL + R and CTRL + S presses
-start_script_path = "/home/admin/Desktop/RadarandRecorder/simulate_R.sh"
-stop_script_path = "/home/admin/Desktop/RadarandRecorder/simulate_S.sh"
-
-# Schedule start and stop jobs with at
-subprocess.run(["at", "-t", start_at], input=f"{start_script_path}\n", text=True)
-subprocess.run(["at", "-t", stop_at], input=f"{stop_script_path}\n", text=True)
+# Calculate number of 30-min intervals to record for,
+# including partial intervals
+rec_intervals = math.ceil((stop_time - start_time).total_seconds() / (30 * 60))
 
 # Log sunset and sunrise times
-log_dir = "/home/admin/Desktop/RadarandRecorder/timelog/sun_times"
+log_dir = ("/home/admin/rec/timelog/sun_times" + f"{start_time}")
 os.makedirs(log_dir, exist_ok=True)
-log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d") + ".log")
+log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d_%H%M%S") + ".log")
 
-with open(log_path, "a") as f:
-    f.write(f"Scheduled start at {start_time} and stop at {stop_time}.\n")
+# Loop over each 30 min interval
+for i in range(rec_intervals):
+    interval_start = start_time + timedelta(minutes=30 * i)
+    interval_stop = min(interval_start + timedelta(minutes=30), stop_time)
+    run_time = int((interval_stop - interval_start).total_seconds())
+    
+    # Filename with interval index
+    file_name = interval_start.strftime('%Y%m%d_%H%M%S%f') + ".wav"
+    start_record = f"arecord -D hw:1,0 -f S32_LE -r 48000 -c 10 -d {run_time} {file_name}"
+    
+    # Format for 'at' (YYYYMMDDHHMM)
+    start_at = interval_start.strftime("%Y%m%d%H%M")
+    
+    # Schedule the job
+    subprocess.run(["at", "-t", start_at], input=f"{start_record}\n", text=True)
+    
+    # Log
+    with open(log_path, "a") as f:
+        f.write(f"Scheduled part {i+1}: {interval_start} to {interval_stop}, {file_name}\n")
+
+print(f"Scheduled {rec_intervals} recordings from {start_time} to {stop_time}.")

@@ -1,16 +1,19 @@
 import time
 import math
+import os
+import re
+import subprocess
 from astral import LocationInfo
 from astral.sun import sun
 from datetime import date, datetime, timedelta
-import subprocess
-import os
 
-# Get location (general is fine)
+# Get location (coords from radar location)
 city = LocationInfo("Grein Farm", "Illinois", "America/Chicago", 40.070442, -88.222556)
 
 # Pull datetime from radar
-# TBD
+# Ensure the Pi running this script has passwordless sudo for ntpdate
+# and uncomment the line below to force sync time with the radar
+## subprocess.run(["sudo", "ntpdate", "-u", "localhost"])
 
 # Get sunset/rise times for today and tomorrow, since sunrise is tomorrow
 stoday = sun(city.observer, date=date.today(), tzinfo=city.timezone)
@@ -31,6 +34,18 @@ stop_at  = stop_time.strftime("%Y%m%d%H%M")
 # including partial intervals
 rec_intervals = math.ceil((stop_time - start_time).total_seconds() / (30 * 60))
 
+# Find sound card being used by the UMC
+arecord_output = subprocess.run(["arecord", "-l"], capture_output=True, text=True).stdout
+match = re.search(r"card (\d+):.*?UMC", arecord_output)
+
+# Set device if found, if not assume card number 1
+if match:
+    card_number = match.group(1)
+    device = f"hw:{card_number},0"
+else:
+    device = "hw:1,0"
+    print("Could not find the UMC recorder. Defaulting to hw:1,0.")
+
 # Log sunset and sunrise times
 log_dir = ("/home/admin/rec/timelog/sun_times" + f"{start_time}")
 os.makedirs(log_dir, exist_ok=True)
@@ -44,15 +59,15 @@ for i in range(rec_intervals):
     
     # Filename with interval index
     file_name = interval_start.strftime('%Y%m%d_%H%M%S%f') + ".wav"
-    start_record = f"arecord -D hw:1,0 -f S32_LE -r 48000 -c 10 -d {run_time} {file_name}"
+    start_record = f"arecord -D {device} -f S32_LE -r 48000 -c 10 -d {run_time} {file_name}"
     
-    # Format for 'at' (YYYYMMDDHHMM)
-    start_at = interval_start.strftime("%Y%m%d%H%M")
+    # Format for 'at' (YYYYMMDDHHMM.SS)
+    start_at = interval_start.strftime("%Y%m%d%H%M.%S")
     
-    # Schedule the job
+    # Schedule the recording job
     subprocess.run(["at", "-t", start_at], input=f"{start_record}\n", text=True)
     
-    # Log
+    # Log the recording
     with open(log_path, "a") as f:
         f.write(f"Scheduled part {i+1}: {interval_start} to {interval_stop}, {file_name}\n")
 

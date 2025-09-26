@@ -26,7 +26,7 @@ sunset = stoday["sunset"]
 start_time = sunset - timedelta(hours=1)
 stop_time = sunrise + timedelta(hours=1)
 
-# Format
+# Format datetime
 start_at = start_time.strftime("%Y%m%d%H%M")
 stop_at  = stop_time.strftime("%Y%m%d%H%M")
 
@@ -51,7 +51,11 @@ log_dir = ("/home/admin/rec/timelog/sun_times" + f"{start_time}")
 os.makedirs(log_dir, exist_ok=True)
 log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d_%H%M%S") + ".log")
 
-# Loop over each 30 min interval
+# Make day folder for recordings
+day_folder = f"/home/admin/rec/{start_time.strftime("%Y%m%d")}"
+os.makedirs(day_folder, exist_ok=True)
+
+# Loop over each 30 min interval nightly
 for i in range(rec_intervals):
     interval_start = start_time + timedelta(minutes=30 * i)
     interval_stop = min(interval_start + timedelta(minutes=30), stop_time)
@@ -59,7 +63,8 @@ for i in range(rec_intervals):
     
     # Filename with interval index
     file_name = interval_start.strftime('%Y%m%d_%H%M%S%f') + ".wav"
-    start_record = f"arecord -D {device} -f S32_LE -r 48000 -c 10 -d {run_time} {file_name}"
+    file_path = os.path.join(day_folder, file_name)
+    start_record = f"arecord -D {device} -f S32_LE -r 48000 -c 10 -d {run_time} {file_path}"
     
     # Format for 'at' (YYYYMMDDHHMM.SS)
     start_at = interval_start.strftime("%Y%m%d%H%M.%S")

@@ -48,9 +48,9 @@ else:
     print("Could not find the UMC recorder. Defaulting to hw:1,0.")
 
 # Log sunset and sunrise times
-log_dir = ("/home/admin/rec/timelog/sun_times" + f"{start_time}")
+log_dir = ("/home/admin/rec/timelog/sun_times")
 os.makedirs(log_dir, exist_ok=True)
-log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d_%H%M%S") + ".log")
+log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d_%H%M%S_%f") + ".log")
 
 # Make day folder for recordings
 day_folder = f"/home/admin/rec/{start_time.strftime('%Y%m%d')}"
@@ -60,12 +60,12 @@ os.makedirs(day_folder, exist_ok=True)
 for i in range(rec_intervals):
     interval_start = start_time + timedelta(minutes=30 * i)
     interval_stop = min(interval_start + timedelta(minutes=30), stop_time)
-    run_time = int((interval_stop - interval_start).total_seconds())
+    run_time = (interval_stop - interval_start).total_seconds() - 0.2  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
     
     # Filename with interval index
-    file_name = interval_start.strftime('%Y%m%d_%H%M%S%f') + ".wav"
+    file_name = interval_start.strftime('%Y%m%d_%H%M%S_%f') + ".wav"
     file_path = os.path.join(day_folder, file_name)
-    start_record = f"arecord -D {device} -f S32_LE -r 48000 -c 10 -d {run_time} {file_path}"
+    start_record = f"arecord -D {device} -f S16_LE -r 24000 -c 10 -d {run_time:.1f} {file_path}"
     
     # Format for 'at' (YYYYMMDDHHMM.SS)
     start_at = interval_start.strftime("%Y%m%d%H%M.%S")
@@ -78,3 +78,14 @@ for i in range(rec_intervals):
         f.write(f"Scheduled part {i+1}: {interval_start} to {interval_stop}, {file_name}\n")
 
 print(f"Scheduled {rec_intervals} recordings from {start_time} to {stop_time}.")
+
+# Schedule upload and cleanup after recording is done
+final_time = stop_time + timedelta(minutes=5)
+final_at = final_time.strftime("%Y%m%d%H%M.%S")
+
+# Call the upload script with the day folder as argument
+upload_cmd = f"/home/admin/rec/BoxUpload.sh {day_folder}"
+subprocess.run(["at", "-t", final_at], input=f"{upload_cmd}\n", text=True)
+
+print(f"Scheduled upload and cleanup for {day_folder} at {final_time}.")
+

@@ -4,7 +4,7 @@ set -euo pipefail
 LOCAL_BASE="/home/admin/rec"
 BOX_BASE="Box:Grein_Farm_Recordings"
 
-# Foldeer recorded from the previous night
+# Folder recorded from the previous night
 DAY_FOLDER=$(basename "$1")
 
 # Upload audio from the previous night

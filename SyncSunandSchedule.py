@@ -65,7 +65,7 @@ for i in range(rec_intervals):
     # Filename with interval index
     file_name = interval_start.strftime('%Y%m%d_%H%M%S_%f') + ".wav"
     file_path = os.path.join(day_folder, file_name)
-    start_record = f"arecord -D {device} -f S16_LE -r 24000 -c 10 -d {run_time:.1f} {file_path}"
+    start_record = f"arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time:.1f} {file_path}"
     
     # Format for 'at' (YYYYMMDDHHMM.SS)
     start_at = interval_start.strftime("%Y%m%d%H%M.%S")

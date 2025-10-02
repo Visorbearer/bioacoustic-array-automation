@@ -9,8 +9,11 @@ DAY_FOLDER=$(basename "$1")
 
 # Convert each .wav to 24-bit / 24kHz
 for f in "$LOCAL_BASE/$DAY_FOLDER"/*.wav; do
-    tmp="${f%.wav}.tmp.wav"
-    ffmpeg -y -loglevel error -i "$f" -ar 24000 -ac 10 -sample_fmt s24 "$tmp" && mv "$tmp" "$f" || rm -f "$tmp"
+    tmp="${f%.wav}.tmp.flac"
+    final="${f%.wav}.flac"
+    ffmpeg -y -loglevel error -i "$f" -ar 24000 -ac 10 -sample_fmt s24 "$tmp" \
+        && mv "$tmp" "$final" && rm -f "$f" \
+        || rm -f "$tmp"
 done
 
 # Upload converted audio

@@ -32,7 +32,7 @@ stop_at  = stop_time.strftime("%Y%m%d%H%M")
 
 # Calculate number of 30-min intervals to record for,
 # including partial intervals
-rec_intervals = math.ceil((stop_time - start_time).total_seconds() / (30 * 60))
+rec_intervals = math.ceil((stop_time - start_time).total_seconds() / (15 * 60))
 
 # Find sound card being used by the UMC
 arecord_output = subprocess.run(["arecord", "-l"], capture_output=True, text=True).stdout
@@ -58,14 +58,14 @@ os.makedirs(day_folder, exist_ok=True)
 
 # Loop over each 30 min interval nightly
 for i in range(rec_intervals):
-    interval_start = start_time + timedelta(minutes=30 * i)
-    interval_stop = min(interval_start + timedelta(minutes=30), stop_time)
-    run_time = (interval_stop - interval_start).total_seconds() - 0.2  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
+    interval_start = start_time + timedelta(minutes=15 * i)
+    interval_stop = min(interval_start + timedelta(minutes=15), stop_time)
+    run_time = int((interval_stop - interval_start).total_seconds() - 1)  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
     
     # Filename with interval index
     file_name = interval_start.strftime('%Y%m%d_%H%M%S_%f') + ".wav"
     file_path = os.path.join(day_folder, file_name)
-    start_record = f"arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time:.1f} {file_path}"
+    start_record = f"arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time} {file_path}"
     
     # Format for 'at' (YYYYMMDDHHMM.SS)
     start_at = interval_start.strftime("%Y%m%d%H%M.%S")

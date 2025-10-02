@@ -80,7 +80,7 @@ for i in range(rec_intervals):
 print(f"Scheduled {rec_intervals} recordings from {start_time} to {stop_time}.")
 
 # Schedule upload and cleanup after recording is done
-final_time = stop_time + timedelta(minutes=5)
+final_time = stop_time + timedelta(minutes=20)
 final_at = final_time.strftime("%Y%m%d%H%M.%S")
 
 # Call the upload script with the day folder as argument

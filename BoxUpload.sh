@@ -11,9 +11,12 @@ DAY_FOLDER=$(basename "$1")
 for f in "$LOCAL_BASE/$DAY_FOLDER"/*.wav; do
     tmp="${f%.wav}.tmp.flac"
     final="${f%.wav}.flac"
-    ffmpeg -y -loglevel error -i "$f" -ar 24000 -ac 10 -sample_fmt s32 "$tmp" \
-        && mv "$tmp" "$final" && rm -f "$f" \
-        || rm -f "$tmp"
+    if ffmpeg -y -loglevel error -i "$f" -map_channel 0.0.0 -map_channel 0.0.1 -map_channel 0.0.2 -map_channel 0.0.3 -map_channel 0.0.4 -map_channel 0.0.5 -ar 24000 -sample_fmt s32 "$tmp"; then
+        mv "$tmp" "$final"
+        rm -f "$f"
+    else
+        rm -f "$tmp"
+    fi
 done
 
 # Upload converted audio

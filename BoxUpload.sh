@@ -11,7 +11,7 @@ DAY_FOLDER=$(basename "$1")
 for f in "$LOCAL_BASE/$DAY_FOLDER"/*.wav; do
     tmp="${f%.wav}.tmp.flac"
     final="${f%.wav}.flac"
-    ffmpeg -y -loglevel error -i "$f" -ar 24000 -ac 10 -sample_fmt s24 "$tmp" \
+    ffmpeg -y -loglevel error -i "$f" -ar 24000 -ac 10 -sample_fmt s32 "$tmp" \
         && mv "$tmp" "$final" && rm -f "$f" \
         || rm -f "$tmp"
 done
@@ -19,14 +19,12 @@ done
 # Upload converted audio
 rclone copy "$LOCAL_BASE/$DAY_FOLDER" "$BOX_BASE/Audio/$DAY_FOLDER" -v
 
-
 # Upload the night's log
 LOGFILE=$(ls -t "$LOCAL_BASE/timelog" | head -n1)
 rclone copyto "$LOCAL_BASE/timelog/$LOGFILE" "$BOX_BASE/Logs/$LOGFILE" -v
 
 # Delete local logs older than 4 days
 find "$LOCAL_BASE/timelog" -type f -name "*.log" -mtime +4 -exec rm -f {} \;
-
 
 # Delete local recording folders older than 4 days
 find "$LOCAL_BASE" -maxdepth 1 -type d -regex ".*/[0-9]{8}" -mtime +4 -exec rm -rf {} \;

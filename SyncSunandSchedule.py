@@ -88,4 +88,3 @@ upload_cmd = f"/home/admin/rec-array-trigger/BoxUpload.sh {day_folder}"
 subprocess.run(["at", "-t", final_at], input=f"{upload_cmd}\n", text=True)
 
 print(f"Scheduled upload and cleanup for {day_folder} at {final_time}.")
-

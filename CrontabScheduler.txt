@@ -1,6 +1,6 @@
 # Crontab Scheduler
 
-# Every day at 3:45 PM, get the time from the radar
-45 15 * * * /usr/bin/python3 /home/admin/rec/SyncSunandSchedule.py
+# Every day at 3:45 PM, get the time from the radar and queue recording/upload
+45 15 * * * /usr/bin/python3 /home/admin/rec-array-trigger/SyncSunandSchedule.py
 
 crontab -e

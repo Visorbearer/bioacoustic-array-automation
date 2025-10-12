@@ -5,7 +5,7 @@ import re
 import subprocess
 from astral import LocationInfo
 from astral.sun import sun
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 # Get location (coords from radar location)
 city = LocationInfo("Grein Farm", "Illinois", "America/Chicago", 40.070442, -88.222556)

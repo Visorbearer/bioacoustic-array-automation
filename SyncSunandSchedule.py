@@ -80,7 +80,7 @@ final_time = stop_time + timedelta(minutes=20)
 final_at = final_time.strftime("%Y%m%d%H%M.%S")
 
 # Call the upload script with the day folder as argument
-upload_cmd = f"/media/admin/'Extreme SSD'/rec-array-trigger/BoxUpload.sh {day_folder}"
+upload_cmd = f"/home/admin/rec-array-trigger/BoxUpload.sh {day_folder}"
 subprocess.run(["at", "-t", final_at], input=f"{upload_cmd}\n", text=True)
 
 print(f"Scheduled upload and cleanup for {day_folder} at {final_time}.")

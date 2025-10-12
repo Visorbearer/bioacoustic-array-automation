@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-LOCAL_BASE="/home/admin/rec"
+LOCAL_BASE="/media/admin/'Extreme SSD'/rec"
 BOX_BASE="Box:Grein_Farm_Recordings"
 
 # Folder recorded from the previous night
@@ -11,7 +11,7 @@ DAY_FOLDER=$(basename "$1")
 for f in "$LOCAL_BASE/$DAY_FOLDER"/*.wav; do
     tmp="${f%.wav}.tmp.flac"
     final="${f%.wav}.flac"
-    if ffmpeg -y -loglevel error -i "$f" -map_channel 0.0.0 -map_channel 0.0.1 -map_channel 0.0.2 -map_channel 0.0.3 -map_channel 0.0.4 -ar 24000 -sample_fmt s32 "$tmp"; then
+    if ffmpeg -y -loglevel error -i "$f" -map_channel 0.0.0 -map_channel 0.0.1 -map_channel 0.0.2 -map_channel 0.0.3 -ar 24000 -sample_fmt s32 "$tmp"; then
         mv "$tmp" "$final"
         rm -f "$f"
     else

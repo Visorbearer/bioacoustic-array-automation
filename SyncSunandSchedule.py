@@ -10,11 +10,6 @@ from datetime import date, datetime, timedelta
 # Get location (coords from radar location)
 city = LocationInfo("Grein Farm", "Illinois", "America/Chicago", 40.070442, -88.222556)
 
-# Pull datetime from radar
-# Ensure the Pi running this script has passwordless sudo for ntpdate
-# and uncomment the line below to force sync time with the radar
-## subprocess.run(["sudo", "ntpdate", "-u", "localhost"])
-
 # Get sunset/rise times for today and tomorrow, since sunrise is tomorrow
 stoday = sun(city.observer, date=date.today(), tzinfo=city.timezone)
 stom = sun(city.observer, date=(date.today() + timedelta(days=1)), tzinfo=city.timezone)
@@ -48,24 +43,25 @@ else:
     print("Could not find the UMC recorder. Defaulting to hw:1,0.")
 
 # Log sunset and sunrise times
-log_dir = ("/home/admin/rec/timelog/sun_times")
+log_dir = ("/media/admin/'Extreme SSD'/rec/timelog/sun_times")
 os.makedirs(log_dir, exist_ok=True)
 log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d_%H%M%S_%f") + ".log")
 
 # Make day folder for recordings
-day_folder = f"/home/admin/rec/{start_time.strftime('%Y%m%d')}"
+day_folder = f"/media/admin/'Extreme SSD'/rec/{start_time.strftime('%Y%m%d')}"
 os.makedirs(day_folder, exist_ok=True)
 
 # Loop over each 30 min interval nightly
 for i in range(rec_intervals):
     interval_start = start_time + timedelta(minutes=15 * i)
     interval_stop = min(interval_start + timedelta(minutes=15), stop_time)
-    run_time = int((interval_stop - interval_start).total_seconds() - 1)  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
+    run_time = int((interval_stop - interval_start).total_seconds() - 6)  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
     
     # Filename with interval index
-    file_name = interval_start.strftime('%Y%m%d_%H%M%S_%f') + ".wav"
+    file_name = interval_start.astimezone(datetime.timezone.utc).strftime('%Y%m%d_%H%M%S_%f') + ".wav"
     file_path = os.path.join(day_folder, file_name)
-    start_record = f"arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time} {file_path}"
+    error_log = "/media/admin/'Extreme SSD'/rec/timelog/arecord_errors.log"
+    start_record = f"arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time} {file_path} 2>> {error_log}"
     
     # Format for 'at' (YYYYMMDDHHMM.SS)
     start_at = interval_start.strftime("%Y%m%d%H%M.%S")
@@ -84,7 +80,7 @@ final_time = stop_time + timedelta(minutes=20)
 final_at = final_time.strftime("%Y%m%d%H%M.%S")
 
 # Call the upload script with the day folder as argument
-upload_cmd = f"/home/admin/rec-array-trigger/BoxUpload.sh {day_folder}"
+upload_cmd = f"/media/admin/'Extreme SSD'/rec-array-trigger/BoxUpload.sh {day_folder}"
 subprocess.run(["at", "-t", final_at], input=f"{upload_cmd}\n", text=True)
 
 print(f"Scheduled upload and cleanup for {day_folder} at {final_time}.")

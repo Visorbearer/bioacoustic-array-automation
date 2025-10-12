@@ -43,12 +43,12 @@ else:
     print("Could not find the UMC recorder. Defaulting to hw:1,0.")
 
 # Log sunset and sunrise times
-log_dir = ("/media/admin/'Extreme SSD'/rec/timelog/sun_times")
+log_dir = ("/media/admin/Extreme SSD/rec/timelog/sun_times")
 os.makedirs(log_dir, exist_ok=True)
 log_path = os.path.join(log_dir, datetime.today().strftime("%Y-%m-%d_%H%M%S_%f") + ".log")
 
 # Make day folder for recordings
-day_folder = f"/media/admin/'Extreme SSD'/rec/{start_time.strftime('%Y%m%d')}"
+day_folder = f"/media/admin/Extreme SSD/rec/{start_time.strftime('%Y%m%d')}"
 os.makedirs(day_folder, exist_ok=True)
 
 # Loop over each 30 min interval nightly
@@ -60,7 +60,7 @@ for i in range(rec_intervals):
     # Filename with interval index
     file_name = interval_start.astimezone(datetime.timezone.utc).strftime('%Y%m%d_%H%M%S_%f') + ".wav"
     file_path = os.path.join(day_folder, file_name)
-    error_log = "/media/admin/'Extreme SSD'/rec/timelog/arecord_errors.log"
+    error_log = "/media/admin/Extreme SSD/rec/timelog/arecord_errors.log"
     start_record = f"arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time} {file_path} 2>> {error_log}"
     
     # Format for 'at' (YYYYMMDDHHMM.SS)

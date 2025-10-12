@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-LOCAL_BASE="/media/admin/'Extreme SSD'/rec"
+LOCAL_BASE="/media/admin/Extreme SSD/rec"
 BOX_BASE="Box:Grein_Farm_Recordings"
 
 # Folder recorded from the previous night

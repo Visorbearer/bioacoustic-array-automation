@@ -58,10 +58,10 @@ for i in range(rec_intervals):
     run_time = int((interval_stop - interval_start).total_seconds() - 6)  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
     
     # Filename with interval index
-    file_name = interval_start.astimezone(datetime.timezone.utc).strftime('%Y%m%d_%H%M%S_%f') + ".wav"
+    file_name = interval_start.astimezone(timezone.utc).strftime('%Y%m%d_%H%M%S_%f') + ".wav"
     file_path = os.path.join(day_folder, file_name)
     error_log = "/media/admin/Extreme SSD/rec/timelog/arecord_errors.log"
-    start_record = f"arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time} {file_path} 2>> {error_log}"
+    start_record = f'arecord -D {device} -f S32_LE -r 44100 -c 10 -d {run_time} "{file_path}" 2>> "{error_log}"'
     
     # Format for 'at' (YYYYMMDDHHMM.SS)
     start_at = interval_start.strftime("%Y%m%d%H%M.%S")
@@ -80,7 +80,7 @@ final_time = stop_time + timedelta(minutes=20)
 final_at = final_time.strftime("%Y%m%d%H%M.%S")
 
 # Call the upload script with the day folder as argument
-upload_cmd = f"/home/admin/rec-array-trigger/BoxUpload.sh {day_folder}"
+upload_cmd = f'/home/admin/rec-array-trigger/BoxUpload.sh "{day_folder}"'
 subprocess.run(["at", "-t", final_at], input=f"{upload_cmd}\n", text=True)
 
 print(f"Scheduled upload and cleanup for {day_folder} at {final_time}.")

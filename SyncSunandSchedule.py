@@ -55,7 +55,7 @@ os.makedirs(day_folder, exist_ok=True)
 for i in range(rec_intervals):
     interval_start = start_time + timedelta(minutes=15 * i)
     interval_stop = min(interval_start + timedelta(minutes=15), stop_time)
-    run_time = int((interval_stop - interval_start).total_seconds() - 6)  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
+    run_time = int((interval_stop - interval_start).total_seconds() - 2)  # <- Subtract small buffer to avoid overlap, which messes up 'at' scheduling
     
     # Filename with interval index
     file_name = interval_start.astimezone(timezone.utc).strftime('%Y%m%d_%H%M%S_%f') + ".wav"

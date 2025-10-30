@@ -53,10 +53,21 @@ write.csv(utm_coords, "aru_coords.csv", row.names = FALSE)
 # View the locations to laugh at how bad my placement was
 plot(
   utm_coords$x, utm_coords$y,
-  xlab = "X (meters, East-West)",
-  ylab = "Y (meters, North-South)",
-  asp = 1, pch = 19, col = ifelse(utm_coords$direction == "radar", "gray65", "#4a6d3e"),
-  main = "Grosbeak and Radar Layout"
+  xlab = "Meters, East-West",
+  ylab = "Meters, North-South",
+  asp = 1, pch = 19,
+  col = ifelse(utm_coords$direction == "radar", "gray65", "#4a6d3e"),
+  main = "Grosbeak and Radar Layout",
+  cex = 2,        # make points bigger
+  cex.axis = 1.5, # make axis tick labels bigger
+  cex.lab = 1.8,  # make axis titles bigger
+  cex.main = 2    # make plot title bigger
 )
-text(utm_coords$x, utm_coords$y, labels = utm_coords$direction, pos = 3, cex = 0.9)
+text(
+  utm_coords$x, utm_coords$y,
+  labels = utm_coords$direction,
+  pos = 3,
+  cex = 1.5,      # make text labels bigger
+  col = "black"
+)
 abline(h = 0, v = 0, lty = 2, col = "gray35")

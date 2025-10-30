@@ -11,5 +11,5 @@ and saved these recordings to a folder on an SSD with the name of the date the r
 
 Within the Post-Processing folder, there are scripts to split the 4-channel audio recorded by the array into
 four separate audio files (North, East, West, and South), to merge the Nighthawk output of those files back together
-into a combined .csv file, to convert the combined file into a format Open Soundscape accepts, and to get relative 
+into a combined .csv file, to convert the combined file into a format OpenSoundscape accepts, and to get relative 
 coordinates for the microphones. This also includes the output file from the coordinate-generating script.
